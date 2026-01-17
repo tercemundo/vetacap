@@ -10,19 +10,8 @@ Script automatizado para extraer **tenencias SHDA** y **cotizaciones CEDEARS** a
 1. **Instalar dependencias**:
    ```bash
    pip install -r requirements.txt
-Configurar credenciales → Copia .env:
-```
-bash
-cp .env.example .env
-# Edita .env con tus datos SHDA
-Ejecutar:
-```
 
-importante, ejecutar el pip install -r requirements
-
-```
-pip install -r requirements.txt
-```
+Configurar credenciales en .env
 
 Luego
 
