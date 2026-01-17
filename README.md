@@ -37,11 +37,18 @@ veta_cedears.csv	Cotizaciones CEDEARS (48hs)
 COPIA .env.example → .env y completa:
 ```
 
-BROKER_ID=284                    # Broker ID (fijo)
-DNI=12345678                     # TU DNI real
-SHDA_USER=mguazzardo             # Usuario SHDA  
-SHDA_PASSWORD=tu_contraseña      # Contraseña SHDA
-COMITENTE=29000                  # Tu comitente
+# Configuración SHDA (Broker Veta Capital)
+
+| Variable      | Valor          | Descripción                  |
+|---------------|----------------|------------------------------|
+| `BROKER_ID`  | `284`          | Broker ID (fijo) [memory:1][conversation_history:4] |
+| `DNI`        | `12345678`     | TU DNI real [memory:1][conversation_history:4] |
+| `SHDA_USER`  | `qqmelo`       | Usuario SHDA [memory:1][conversation_history:4] |
+| `SHDA_PASSWORD` | `quebuscas` | Contraseña SHDA [memory:1][conversation_history:4] |
+| `COMITENTE`  | `29000`        | Tu comitente [memory:1][conversation_history:4] |
+
+
+
 🛡️ Seguridad
 ✅ Credenciales en .env (nunca en código)
 
