@@ -16,7 +16,7 @@ if st.session_state.hb is None:
     st.header("📋 Ingresa tus credenciales")
     broker_id = st.number_input("Broker ID", min_value=1, value=284)
     dni = st.text_input("DNI")
-    shda_user = st.text_input("SHDA User", value="mguazzardo")
+    shda_user = st.text_input("SHDA User")
     shda_password = st.text_input("SHDA Password", type="password")
     comitente = st.text_input("Comitente")
     
