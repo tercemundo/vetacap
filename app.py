@@ -15,10 +15,10 @@ if 'portfolio' not in st.session_state:
 if st.session_state.hb is None:
     st.header("📋 Ingresa tus credenciales")
     broker_id = st.number_input("Broker ID", min_value=1, value=284)
-    dni = st.text_input("DNI", value="25070170")
+    dni = st.text_input("DNI)
     shda_user = st.text_input("SHDA User", value="mguazzardo")
     shda_password = st.text_input("SHDA Password", type="password")
-    comitente = st.text_input("Comitente", value="44849")
+    comitente = st.text_input("Comitente")
     
     col1, col2 = st.columns([3,1])
     with col2:
@@ -65,13 +65,6 @@ if st.session_state.portfolio is not None:
     st.dataframe(st.session_state.portfolio)
     
     # Descarga CSV (funciona perfecto fuera del form)
-    csv = st.session_state.portfolio.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        "💾 Descargar veta_portfolio.csv",
-        csv,
-        "veta_portfolio.csv",
-        "text/csv"
-    )
     
     # Botón reset
     if st.button("🔄 Nueva Conexión"):
