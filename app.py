@@ -22,7 +22,7 @@ with st.sidebar:
         dni = st.text_input("DNI", placeholder="12345678", help="Sin puntos/guiones")
         user = st.text_input("Usuario SHDA", placeholder="mguazzardo")
         password = st.text_input("Contraseña SHDA", type="password")
-        comitente = st.text_input("Comitente", value="44849", placeholder="44849")
+        comitente = st.text_input("Comitente")
         
         connect_btn = st.form_submit_button("🔌 Conectar", use_container_width=True)
     
