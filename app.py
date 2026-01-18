@@ -5,8 +5,14 @@ import io
 
 st.title("🚀 SHDA Portfolio Extractor")
 
-# Formulario para credenciales
-with st.form("credentials_form"):
+# Estado para credenciales
+if 'hb' not in st.session_state:
+    st.session_state.hb = None
+if 'portfolio' not in st.session_state:
+    st.session_state.portfolio = None
+
+# Formulario credenciales (solo si no conectado)
+if st.session_state.hb is None:
     st.header("📋 Ingresa tus credenciales")
     broker_id = st.number_input("Broker ID", min_value=1, value=284)
     dni = st.text_input("DNI", value="25070170")
@@ -14,31 +20,31 @@ with st.form("credentials_form"):
     shda_password = st.text_input("SHDA Password", type="password")
     comitente = st.text_input("Comitente", value="44849")
     
-    submitted = st.form_submit_button("🔑 Conectar y Extraer Portfolio")
+    col1, col2 = st.columns([3,1])
+    with col2:
+        if st.button("🔑 Conectar", type="primary"):
+            missing = [k for k, v in [('BROKER_ID', broker_id), ('DNI', dni), 
+                                      ('SHDA_USER', shda_user), ('SHDA_PASSWORD', shda_password)] 
+                      if not v]
+            if missing:
+                st.error(f"❌ FALTAN: {missing}")
+            else:
+                try:
+                    st.session_state.hb = SHDA.SHDA(broker_id, dni, shda_user, shda_password)
+                    st.session_state.comitente = comitente
+                    st.success("✅ Conectado!")
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"❌ Error conexión: {str(e)}")
+else:
+    st.success(f"✅ Conectado como {st.session_state.hb}")
     
-    if submitted:
-        # Validar credenciales
-        missing = [k for k, v in [('BROKER_ID', broker_id), ('DNI', dni), 
-                                  ('SHDA_USER', shda_user), ('SHDA_PASSWORD', shda_password)] 
-                  if not v]
-        if missing:
-            st.error(f"❌ FALTAN: {missing}")
-            st.stop()
-        
-        with st.spinner("Conectando a SHDA..."):
+    # Botón para extraer (fuera del form)
+    if st.button("📊 Extraer Portfolio", type="primary"):
+        with st.spinner("Extrayendo datos..."):
             try:
-                hb = SHDA.SHDA(broker_id, dni, shda_user, shda_password)
-                st.success("✅ Conexión exitosa!")
+                tenencias = st.session_state.hb.account(st.session_state.comitente)
                 
-                st.header("📊 Inspeccionando Portfolio")
-                tenencias = hb.account(comitente)
-                
-                st.write("**Columnas disponibles:**")
-                st.write(tenencias.columns.tolist())
-                st.write(f"**Shape:** {tenencias.shape}")
-                st.dataframe(tenencias.head())
-                
-                # Procesar portfolio
                 tick_col = 'TICK'
                 cant_col = 'CANT' 
                 pcio_col = 'PCIO'
@@ -46,22 +52,29 @@ with st.form("credentials_form"):
                 
                 portfolio_core = tenencias[[tick_col, cant_col, pcio_col, impo_col]].copy()
                 portfolio_core.columns = ['TICK', 'CANT', 'PCIO', 'IMPO']
+                st.session_state.portfolio = portfolio_core
                 
-                st.subheader("✅ Portfolio Extraído")
-                st.dataframe(portfolio_core)
-                
-                # Descarga CSV
-                csv_buffer = io.StringIO()
-                portfolio_core.to_csv(csv_buffer, index=False)
-                st.download_button(
-                    label="💾 Descargar veta_portfolio.csv",
-                    data=csv_buffer.getvalue(),
-                    file_name="veta_portfolio.csv",
-                    mime="text/csv"
-                )
-                
+                st.success("✅ Portfolio cargado!")
+                st.rerun()
             except Exception as e:
-                st.error(f"❌ Error: {str(e)}")
-                st.info("Verifica tus credenciales y conexión.")
+                st.error(f"❌ Error extracción: {str(e)}")
 
-st.info("👆 Ingresa tus datos y presiona 'Conectar y Extraer Portfolio'")
+# Mostrar portfolio si existe
+if st.session_state.portfolio is not None:
+    st.header("✅ Tu Portfolio")
+    st.dataframe(st.session_state.portfolio)
+    
+    # Descarga CSV (funciona perfecto fuera del form)
+    csv = st.session_state.portfolio.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        "💾 Descargar veta_portfolio.csv",
+        csv,
+        "veta_portfolio.csv",
+        "text/csv"
+    )
+    
+    # Botón reset
+    if st.button("🔄 Nueva Conexión"):
+        for key in st.session_state.keys():
+            del st.session_state[key]
+        st.rerun()
